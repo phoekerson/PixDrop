@@ -308,47 +308,73 @@ export default function DashboardPage() {
             {/* Catégories */}
             <div>
               <label className="block text-sm font-semibold uppercase tracking-[0.25em] text-black/60 mb-3">
-                Catégories
+                Catégories {selectedCategories.length > 0 && `(${selectedCategories.length} sélectionnée${selectedCategories.length > 1 ? 's' : ''})`}
               </label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {categories.map((category) => (
-                  <button
-                    key={category.id}
-                    type="button"
-                    onClick={() => handleCategoryToggle(category.id)}
-                    className={`px-4 py-3 rounded-2xl border text-sm font-semibold transition-all ${
-                      selectedCategories.includes(category.id)
-                        ? 'bg-pink-500 text-black border-pink-500'
-                        : 'bg-white border-black/10 text-black/70 hover:border-pink-500'
-                    }`}
-                  >
-                    {category.nom}
-                  </button>
-                ))}
-              </div>
+              {categories.length === 0 ? (
+                <div className="p-4 rounded-2xl border border-black/10 bg-[#fcf7ff] text-center">
+                  <p className="text-sm text-black/60">
+                    Chargement des catégories...
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {categories.map((category) => (
+                    <button
+                      key={category.id}
+                      type="button"
+                      onClick={() => handleCategoryToggle(category.id)}
+                      className={`px-4 py-3 rounded-2xl border text-sm font-semibold transition-all ${
+                        selectedCategories.includes(category.id)
+                          ? 'bg-pink-500 text-black border-pink-500'
+                          : 'bg-white border-black/10 text-black/70 hover:border-pink-500'
+                      }`}
+                    >
+                      {category.nom}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {selectedCategories.length === 0 && (
+                <p className="mt-2 text-xs text-black/50">
+                  Sélectionnez au moins une catégorie pour faciliter la recherche
+                </p>
+              )}
             </div>
 
             {/* Types */}
             <div>
               <label className="block text-sm font-semibold uppercase tracking-[0.25em] text-black/60 mb-3">
-                Types de photo
+                Types de photo {selectedTypes.length > 0 && `(${selectedTypes.length} sélectionné${selectedTypes.length > 1 ? 's' : ''})`}
               </label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {types.map((type) => (
-                  <button
-                    key={type.id}
-                    type="button"
-                    onClick={() => handleTypeToggle(type.id)}
-                    className={`px-4 py-3 rounded-2xl border text-sm font-semibold transition-all ${
-                      selectedTypes.includes(type.id)
-                        ? 'bg-pink-500 text-black border-pink-500'
-                        : 'bg-white border-black/10 text-black/70 hover:border-pink-500'
-                    }`}
-                  >
-                    {type.nom}
-                  </button>
-                ))}
-              </div>
+              {types.length === 0 ? (
+                <div className="p-4 rounded-2xl border border-black/10 bg-[#fcf7ff] text-center">
+                  <p className="text-sm text-black/60">
+                    Chargement des types...
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {types.map((type) => (
+                    <button
+                      key={type.id}
+                      type="button"
+                      onClick={() => handleTypeToggle(type.id)}
+                      className={`px-4 py-3 rounded-2xl border text-sm font-semibold transition-all ${
+                        selectedTypes.includes(type.id)
+                          ? 'bg-pink-500 text-black border-pink-500'
+                          : 'bg-white border-black/10 text-black/70 hover:border-pink-500'
+                      }`}
+                    >
+                      {type.nom}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {selectedTypes.length === 0 && (
+                <p className="mt-2 text-xs text-black/50">
+                  Sélectionnez au moins un type pour faciliter la recherche
+                </p>
+              )}
             </div>
 
             {/* Bouton submit */}

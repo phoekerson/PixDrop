@@ -297,16 +297,40 @@ export default function GaleriePage() {
                             <span>{photo._count.comments} 💬</span>
                           </div>
                         </div>
-                        {photo.categories.length > 0 && (
-                          <div className="mt-4 flex flex-wrap gap-2">
-                            {photo.categories.slice(0, 3).map((pc) => (
-                              <span
-                                key={pc.category.id}
-                                className="px-3 py-1 rounded-full bg-[#f6f1ff] text-xs font-semibold text-black/70"
-                              >
-                                {pc.category.nom}
-                              </span>
-                            ))}
+                        {(photo.categories.length > 0 || photo.types.length > 0) && (
+                          <div className="mt-4 space-y-2">
+                            {photo.categories.length > 0 && (
+                              <div className="flex flex-wrap gap-2">
+                                {photo.categories.map((pc) => (
+                                  <button
+                                    key={pc.category.id}
+                                    onClick={(e) => {
+                                      e.preventDefault()
+                                      handleCategoryChange(pc.category.id)
+                                    }}
+                                    className="px-3 py-1 rounded-full bg-[#f6f1ff] hover:bg-pink-500 hover:text-black text-xs font-semibold text-black/70 transition-colors cursor-pointer"
+                                  >
+                                    {pc.category.nom}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                            {photo.types.length > 0 && (
+                              <div className="flex flex-wrap gap-2">
+                                {photo.types.map((pt) => (
+                                  <button
+                                    key={pt.type.id}
+                                    onClick={(e) => {
+                                      e.preventDefault()
+                                      handleTypeChange(pt.type.id)
+                                    }}
+                                    className="px-3 py-1 rounded-full bg-white border border-black/10 hover:bg-pink-500 hover:text-black hover:border-pink-500 text-xs font-semibold text-black/70 transition-colors cursor-pointer"
+                                  >
+                                    {pt.type.nom}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
