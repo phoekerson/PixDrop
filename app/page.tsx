@@ -1,3 +1,8 @@
+"use client";
+
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
+import Link from 'next/link'
+
 const stats = [
   { label: "Créateurs actifs", value: "42K+" },
   { label: "Photos partagées", value: "3.2M" },
@@ -36,27 +41,49 @@ export default function Home() {
     <div className="min-h-screen bg-[#fcf7ff] text-[#0b0b0b]">
       <header className="sticky top-0 z-10 border-b border-black/10 bg-black text-white">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
             <div className="rounded-full bg-white px-4 py-2 text-xl font-bold text-black">
               PIXDROP
             </div>
             <span className="text-sm font-semibold uppercase tracking-[0.35em] text-pink-200">
               BETA
             </span>
-          </div>
+          </Link>
           <nav className="hidden items-center gap-6 text-sm font-semibold md:flex">
-            {["Découvrir", "Créateurs", "Tarifs", "À propos"].map((item) => (
-              <a
-                key={item}
-                href="#"
-                className="transition hover:text-pink-200"
-              >
-                {item}
-              </a>
-            ))}
-            <button className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-black transition hover:bg-pink-200">
-              Espace Studio
-            </button>
+            <Link href="/galerie" className="transition hover:text-pink-200">
+              Découvrir
+            </Link>
+            <Link href="/galerie" className="transition hover:text-pink-200">
+              Créateurs
+            </Link>
+            <Link href="#tarifs" className="transition hover:text-pink-200">
+              Tarifs
+            </Link>
+            <Link href="#apropos" className="transition hover:text-pink-200">
+              À propos
+            </Link>
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-black transition hover:bg-pink-200">
+                  Connexion
+                </button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <Link href="/dashboard">
+                <button className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-black transition hover:bg-pink-200 mr-2">
+                  Dashboard
+                </button>
+              </Link>
+              <UserButton 
+                appearance={{
+                  elements: {
+                    avatarBox: "w-10 h-10",
+                    userButtonPopoverCard: "bg-white text-black",
+                  }
+                }}
+              />
+            </SignedIn>
           </nav>
         </div>
       </header>
@@ -78,12 +105,25 @@ export default function Home() {
                 pro pour publier — il suffit de créer un compte.
               </p>
               <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-                <button className="w-full rounded-full bg-pink-500 px-8 py-4 text-lg font-semibold text-black transition hover:translate-y-0.5 hover:bg-pink-400 sm:w-auto">
-                  Ouvrir un compte gratuit
-                </button>
-                <button className="w-full rounded-full border border-black px-8 py-4 text-lg font-semibold transition hover:bg-black hover:text-white sm:w-auto">
-                  Explorer la galerie
-                </button>
+                <SignedOut>
+                  <SignUpButton mode="modal">
+                    <button className="w-full rounded-full bg-pink-500 px-8 py-4 text-lg font-semibold text-black transition hover:translate-y-0.5 hover:bg-pink-400 sm:w-auto">
+                      Ouvrir un compte gratuit
+                    </button>
+                  </SignUpButton>
+                </SignedOut>
+                <SignedIn>
+                  <Link href="/dashboard">
+                    <button className="w-full rounded-full bg-pink-500 px-8 py-4 text-lg font-semibold text-black transition hover:translate-y-0.5 hover:bg-pink-400 sm:w-auto">
+                      Accéder au Dashboard
+                    </button>
+                  </Link>
+                </SignedIn>
+                <Link href="/galerie">
+                  <button className="w-full rounded-full border border-black px-8 py-4 text-lg font-semibold transition hover:bg-black hover:text-white sm:w-auto">
+                    Explorer la galerie
+                  </button>
+                </Link>
               </div>
             </div>
             <div className="flex flex-1 flex-col gap-6 rounded-[28px] border border-black/10 bg-[#fff5fb] p-8">
@@ -263,12 +303,25 @@ export default function Home() {
               Prêt·e à partager tes images ?
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <button className="rounded-full bg-black px-6 py-3 text-sm font-semibold text-white transition hover:bg-pink-500 hover:text-black">
-                Démarrer gratuitement
-              </button>
-              <button className="rounded-full border border-black px-6 py-3 text-sm font-semibold text-black transition hover:bg-black hover:text-white">
-                Regarder la démo
-              </button>
+              <SignedOut>
+                <SignUpButton mode="modal">
+                  <button className="rounded-full bg-black px-6 py-3 text-sm font-semibold text-white transition hover:bg-pink-500 hover:text-black">
+                    Démarrer gratuitement
+                  </button>
+                </SignUpButton>
+              </SignedOut>
+              <SignedIn>
+                <Link href="/dashboard">
+                  <button className="rounded-full bg-black px-6 py-3 text-sm font-semibold text-white transition hover:bg-pink-500 hover:text-black">
+                    Accéder au Dashboard
+                  </button>
+                </Link>
+              </SignedIn>
+              <Link href="/galerie">
+                <button className="rounded-full border border-black px-6 py-3 text-sm font-semibold text-black transition hover:bg-black hover:text-white">
+                  Explorer la galerie
+                </button>
+              </Link>
             </div>
           </div>
         </section>

@@ -1,36 +1,121 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PixDrop - Application de Partage de Photos
 
-## Getting Started
+Application de partage de photos avec authentification Clerk, catégories, types et système de commentaires.
 
-First, run the development server:
+## Fonctionnalités
+
+- ✅ Authentification avec Clerk synchronisée avec PostgreSQL
+- ✅ Upload de photos avec validation (JPEG, PNG, WebP, max 10MB)
+- ✅ Catégories et types de photos
+- ✅ Système de commentaires avec réponses
+- ✅ Système de likes
+- ✅ Galerie publique accessible sans connexion
+- ✅ Dashboard pour uploader des photos
+- ✅ Page de détail avec commentaires
+- ✅ Design moderne inspiré de Gumroad
+
+## Prérequis
+
+- Node.js 18+
+- PostgreSQL
+- Compte Clerk (pour l'authentification)
+
+## Installation
+
+1. Cloner le projet et installer les dépendances :
+
+```bash
+npm install
+```
+
+2. Configurer les variables d'environnement :
+
+Créez un fichier `.env.local` à la racine du projet :
+
+```env
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/pixdrop?schema=public"
+
+# Clerk
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
+
+# Webhook Clerk (optionnel, pour la synchronisation automatique)
+WEBHOOK_SECRET=whsec_...
+```
+
+3. Initialiser la base de données :
+
+```bash
+# Générer le client Prisma
+npx prisma generate
+
+# Appliquer les migrations
+npx prisma migrate dev
+
+# Seed les catégories et types
+npm run db:seed
+```
+
+4. Configurer le webhook Clerk (optionnel mais recommandé) :
+
+- Allez dans votre dashboard Clerk
+- Créez un webhook pointant vers : `https://votre-domaine.com/api/webhooks/clerk`
+- Copiez le `WEBHOOK_SECRET` dans votre `.env.local`
+- Sélectionnez les événements : `user.created`, `user.updated`, `user.deleted`
+
+5. Lancer le serveur de développement :
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+L'application sera accessible sur [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Structure du projet
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+├── app/
+│   ├── api/
+│   │   ├── photos/          # API pour les photos
+│   │   ├── categories/      # API pour les catégories
+│   │   ├── types/           # API pour les types
+│   │   └── webhooks/        # Webhook Clerk
+│   ├── dashboard/           # Page Dashboard (upload)
+│   ├── galerie/             # Page Galerie (liste des photos)
+│   ├── photo/[id]/         # Page détail photo
+│   ├── layout.tsx          # Layout principal
+│   └── page.tsx            # Landing page
+├── lib/
+│   ├── prisma.ts           # Client Prisma
+│   └── utils.ts            # Utilitaires
+├── prisma/
+│   └── schema.prisma       # Schéma de base de données
+└── scripts/
+    └── seed.ts             # Script de seed
+```
 
-## Learn More
+## Technologies utilisées
 
-To learn more about Next.js, take a look at the following resources:
+- **Next.js 16** - Framework React
+- **TypeScript** - Typage statique
+- **Prisma** - ORM pour PostgreSQL
+- **Clerk** - Authentification
+- **Tailwind CSS** - Styling
+- **Framer Motion** - Animations
+- **Lucide React** - Icônes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Notes importantes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Les photos sont stockées localement dans `public/uploads/` par défaut
+- Pour la production, configurez Supabase ou un autre service de stockage cloud
+- Le webhook Clerk est nécessaire pour synchroniser automatiquement les utilisateurs avec la base de données
+- Assurez-vous que le dossier `public/uploads/` existe et est accessible en écriture
 
-## Deploy on Vercel
+## License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT

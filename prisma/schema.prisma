@@ -1,177 +1,132 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql" 
-  url      = env("DATABASE_URL")
+  provider = "postgresql"
 }
 
-// Modèle Utilisateur
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  username      String    @unique
-  password      String    
-  nom           String?
-  prenom        String?
-  avatar        String?   
-  bio           String?   @db.Text
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  
-  // Relations
-  photos        Photo[]
-  comments      Comment[]
-  likes         Like[]
-  
+  id        String    @id @default(cuid())
+  email     String    @unique
+  username  String    @unique
+  password  String
+  nom       String?
+  prenom    String?
+  avatar    String?
+  bio       String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  comments  Comment[]
+  likes     Like[]
+  photos    Photo[]
+
   @@map("users")
 }
 
-// Modèle Photo
 model Photo {
-  id            String    @id @default(cuid())
-  titre         String
-  description   String?   @db.Text
-  supabaseBucketUrl      String    // URL de l'image stockée sur le buclet supabase
-  imageKey      String?   // Clé pour le stockag ( Supabase bucket)
-  
-  
-  width         Int?
-  height        Int?
-  size          Int?      // Taille en octets
-  format        String?   // jpg, png, webp
-  
-  
-  vues          Int       @default(0)
-  telechargements Int     @default(0)
-  
-  // Visibilité
-  isPublic      Boolean   @default(true)
-  isActive      Boolean   @default(true)
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  
-  // Relations
-  auteurId      String
-  auteur        User      @relation(fields: [auteurId], references: [id], onDelete: Cascade)
-  
-  categories    PhotoCategory[]
-  types         PhotoType[]
-  comments      Comment[]
-  likes         Like[]
-  
+  id                String          @id @default(cuid())
+  titre             String
+  description       String?
+  supabaseBucketUrl String
+  imageKey          String?
+  width             Int?
+  height            Int?
+  size              Int?
+  format            String?
+  vues              Int             @default(0)
+  telechargements   Int             @default(0)
+  isPublic          Boolean         @default(true)
+  isActive          Boolean         @default(true)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  auteurId          String
+  comments          Comment[]
+  likes             Like[]
+  categories        PhotoCategory[]
+  types             PhotoType[]
+  auteur            User            @relation(fields: [auteurId], references: [id], onDelete: Cascade)
+
   @@index([auteurId])
   @@index([createdAt])
   @@map("photos")
 }
 
-// Modèle Catégorie
 model Category {
-  id            String    @id @default(cuid())
-  nom           String    @unique
-  slug          String    @unique
-  description   String?   @db.Text
-  icone         String?   // Icône ou emoji pour la catégorie
-  couleur       String?   // Couleur hex pour l'UI
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  
-  // Relations
-  photos        PhotoCategory[]
-  
+  id          String          @id @default(cuid())
+  nom         String          @unique
+  slug        String          @unique
+  description String?
+  icone       String?
+  couleur     String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  photos      PhotoCategory[]
+
   @@map("categories")
 }
 
-// Modèle Type de Photo
 model Type {
-  id            String    @id @default(cuid())
-  nom           String    @unique
-  slug          String    @unique
-  description   String?   @db.Text
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  
-  // Relations
-  photos        PhotoType[]
-  
+  id          String      @id @default(cuid())
+  nom         String      @unique
+  slug        String      @unique
+  description String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  photos      PhotoType[]
+
   @@map("types")
 }
 
-// Table de liaison Photo-Catégorie (relation many-to-many)
 model PhotoCategory {
-  photoId       String
-  categoryId    String
-  
-  photo         Photo     @relation(fields: [photoId], references: [id], onDelete: Cascade)
-  category      Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  
-  assignedAt    DateTime  @default(now())
-  
+  photoId    String
+  categoryId String
+  assignedAt DateTime @default(now())
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  photo      Photo    @relation(fields: [photoId], references: [id], onDelete: Cascade)
+
   @@id([photoId, categoryId])
   @@map("photo_categories")
 }
 
-// Table de liaison Photo-Type (relation many-to-many)
 model PhotoType {
-  photoId       String
-  typeId        String
-  
-  photo         Photo     @relation(fields: [photoId], references: [id], onDelete: Cascade)
-  type          Type      @relation(fields: [typeId], references: [id], onDelete: Cascade)
-  
-  assignedAt    DateTime  @default(now())
-  
+  photoId    String
+  typeId     String
+  assignedAt DateTime @default(now())
+  photo      Photo    @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  type       Type     @relation(fields: [typeId], references: [id], onDelete: Cascade)
+
   @@id([photoId, typeId])
   @@map("photo_types")
 }
 
-// Modèle Commentaire
 model Comment {
-  id            String    @id @default(cuid())
-  contenu       String    @db.Text
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  
-  // Relations
-  auteurId      String
-  auteur        User      @relation(fields: [auteurId], references: [id], onDelete: Cascade)
-  
-  photoId       String
-  photo         Photo     @relation(fields: [photoId], references: [id], onDelete: Cascade)
-  
-  
-  parentId      String?
-  parent        Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
-  replies       Comment[] @relation("CommentReplies")
-  
+  id        String    @id @default(cuid())
+  contenu   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  auteurId  String
+  photoId   String
+  parentId  String?
+  auteur    User      @relation(fields: [auteurId], references: [id], onDelete: Cascade)
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("CommentReplies")
+  photo     Photo     @relation(fields: [photoId], references: [id], onDelete: Cascade)
+
   @@index([photoId])
   @@index([auteurId])
   @@index([parentId])
   @@map("comments")
 }
 
-
 model Like {
-  id            String    @id @default(cuid())
-  
-  createdAt     DateTime  @default(now())
-  
-  // Relations
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  photoId       String
-  photo         Photo     @relation(fields: [photoId], references: [id], onDelete: Cascade)
-  
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  userId    String
+  photoId   String
+  photo     Photo    @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([userId, photoId])
   @@index([photoId])
   @@index([userId])

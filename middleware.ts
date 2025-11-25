@@ -1,5 +1,9 @@
 import { clerkMiddleware } from '@clerk/nextjs/server';
 
+// Le middleware s'exécute dans le runtime Edge et ne peut pas utiliser Prisma
+// La synchronisation se fait automatiquement via :
+// 1. Le composant UserSync dans app/layout.tsx
+// 2. Les routes API qui appellent syncUser() avant chaque action
 export default clerkMiddleware();
 
 export const config = {
