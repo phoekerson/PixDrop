@@ -70,8 +70,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+  
+  // Si la clé n'est pas définie, afficher un avertissement mais permettre le build
+  if (!publishableKey) {
+    console.warn('NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is not set. Clerk authentication will not work.')
+  }
+  
   return (
-    <ClerkProvider>
+    <ClerkProvider publishableKey={publishableKey || ''}>
       <html lang="fr">
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           <UserSync />
