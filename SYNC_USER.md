@@ -76,3 +76,4 @@ Si l'utilisateur n'apparaît pas immédiatement :
 
 Les deux méthodes peuvent coexister sans problème.
 
+
