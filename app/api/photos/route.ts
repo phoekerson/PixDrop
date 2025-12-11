@@ -2,9 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { syncUser } from '@/lib/sync-user'
-import { writeFile, mkdir } from 'fs/promises'
-import { join } from 'path'
-import { existsSync } from 'fs'
+import { put } from '@vercel/blob'
 
 // Forcer l'utilisation du runtime Node.js (nécessaire pour Prisma avec PostgreSQL)
 export const runtime = 'nodejs'
@@ -155,26 +153,25 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Créer le dossier uploads s'il n'existe pas
-    const uploadsDir = join(process.cwd(), 'public', 'uploads')
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true })
-    }
-
     // Générer un nom de fichier unique
     const timestamp = Date.now()
     const randomString = Math.random().toString(36).substring(2, 15)
     const fileExtension = file.name.split('.').pop()
     const fileName = `${timestamp}-${randomString}.${fileExtension}`
-    const filePath = join(uploadsDir, fileName)
 
     // Sauvegarder le fichier
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-    await writeFile(filePath, buffer)
 
-    // URL publique de l'image
-    const imageUrl = `/uploads/${fileName}`
+    // Stocker l'image sur Vercel Blob (persistant) au lieu du disque éphémère
+    // Nécessite la variable d'env BLOB_READ_WRITE_TOKEN sur Vercel
+    const blob = await put(`uploads/${fileName}`, buffer, {
+      access: 'public',
+      contentType: file.type,
+    })
+
+    // URL publique absolue
+    const imageUrl = blob.url
 
     // Parser les catégories et types
     const parsedCategoryIds = categoryIds ? JSON.parse(categoryIds) : []

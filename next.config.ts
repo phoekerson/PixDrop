@@ -18,6 +18,11 @@ const nextConfig: NextConfig = {
         hostname: '**.clerk.accounts.dev',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: '*.blob.vercel-storage.com',
+        pathname: '/**',
+      },
     ],
   },
 };
