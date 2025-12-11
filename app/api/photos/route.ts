@@ -3,8 +3,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { syncUser } from '@/lib/sync-user'
 import { put } from '@vercel/blob'
+import { writeFile, mkdir } from 'fs/promises'
+import { existsSync } from 'fs'
+import { join } from 'path'
 
-// Forcer l'utilisation du runtime Node.js (nécessaire pour Prisma avec PostgreSQL)
 export const runtime = 'nodejs'
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
@@ -163,15 +165,25 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
-    // Stocker l'image sur Vercel Blob (persistant) au lieu du disque éphémère
-    // Nécessite la variable d'env BLOB_READ_WRITE_TOKEN sur Vercel
-    const blob = await put(`uploads/${fileName}`, buffer, {
-      access: 'public',
-      contentType: file.type,
-    })
+    let imageUrl: string
 
-    // URL publique absolue
-    const imageUrl = blob.url
+    // Si le token Vercel Blob est présent, on stocke sur Blob (prod)
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      const blob = await put(`uploads/${fileName}`, buffer, {
+        access: 'public',
+        contentType: file.type,
+      })
+      imageUrl = blob.url
+    } else {
+      // Fallback pour le développement local : stockage dans public/uploads
+      const uploadsDir = join(process.cwd(), 'public', 'uploads')
+      if (!existsSync(uploadsDir)) {
+        await mkdir(uploadsDir, { recursive: true })
+      }
+      const filePath = join(uploadsDir, fileName)
+      await writeFile(filePath, buffer)
+      imageUrl = `/uploads/${fileName}`
+    }
 
     // Parser les catégories et types
     const parsedCategoryIds = categoryIds ? JSON.parse(categoryIds) : []
@@ -182,7 +194,7 @@ export async function POST(request: NextRequest) {
       data: {
         titre: titre.trim(),
         description: description?.trim() || null,
-        supabaseBucketUrl: imageUrl, // Pour l'instant on utilise l'URL locale
+        supabaseBucketUrl: imageUrl, // URL publique Vercel Blob
         imageKey: fileName,
         format: fileExtension?.toLowerCase(),
         size: file.size,
