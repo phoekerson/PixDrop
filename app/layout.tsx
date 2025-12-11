@@ -14,8 +14,10 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 })
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://pix-drop-six.vercel.app'
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://pixdrop.vercel.app'),
+  metadataBase: new URL(siteUrl),
   title: 'PixDrop - Partage de photos et Galerie en ligne',
   description: 'PixDrop est la meilleure plateforme pour partager vos photos, créer des galeries magnifiques et organiser vos souvenirs. Simple, rapide et élégant.',
   keywords: [

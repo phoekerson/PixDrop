@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma'
 
 // Forcer la génération dynamique pour que chaque partage récupère la dernière version
 export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const dynamicParams = true
 
 /**
  * Génère des métadonnées Open Graph/Twitter pour chaque photo individuelle.
@@ -21,6 +23,16 @@ export async function generateMetadata(
       title: 'Photo introuvable',
       description: 'Cette photo est introuvable.',
       robots: { index: false },
+      openGraph: {
+        title: 'Photo introuvable',
+        description: 'Cette photo est introuvable.',
+        type: 'article',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: 'Photo introuvable',
+        description: 'Cette photo est introuvable.',
+      },
     }
   }
 
@@ -43,6 +55,16 @@ export async function generateMetadata(
       title: 'Photo introuvable',
       description: 'Cette photo est introuvable.',
       robots: { index: false },
+      openGraph: {
+        title: 'Photo introuvable',
+        description: 'Cette photo est introuvable.',
+        type: 'article',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: 'Photo introuvable',
+        description: 'Cette photo est introuvable.',
+      },
     }
   }
 
@@ -85,6 +107,10 @@ export async function generateMetadata(
     },
     alternates: {
       canonical,
+    },
+    robots: {
+      index: true,
+      follow: true,
     },
   }
 }
