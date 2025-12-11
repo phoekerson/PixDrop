@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
 
+// Forcer la génération dynamique pour que chaque partage récupère la dernière version
+export const dynamic = 'force-dynamic'
+
 /**
  * Génère des métadonnées Open Graph/Twitter pour chaque photo individuelle.
  * Cela permet d'avoir un aperçu riche (image + description) lors du partage
@@ -10,6 +13,7 @@ export async function generateMetadata(
   { params }: { params: { id: string } }
 ): Promise<Metadata> {
   const id = params.id
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://pix-drop-six.vercel.app'
 
   // Si l'id est manquant ou manifestement invalide, ne pas indexer
   if (!id) {
@@ -48,7 +52,13 @@ export async function generateMetadata(
     `Découvrez "${photo.titre}" partagé sur PixDrop.` +
     (photo.auteur?.username ? ` Par ${photo.auteur.username}.` : '')
 
-  const imageUrl = photo.supabaseBucketUrl
+  // Assurer une URL absolue pour les plateformes sociales
+  const imageUrl = photo.supabaseBucketUrl?.startsWith('http')
+    ? photo.supabaseBucketUrl
+    : `${siteUrl}${photo.supabaseBucketUrl || ''}`
+
+  // Canonical absolu
+  const canonical = `${siteUrl}/photo/${id}`
 
   const images = imageUrl
     ? [
@@ -74,7 +84,7 @@ export async function generateMetadata(
       images,
     },
     alternates: {
-      canonical: `/photo/${id}`,
+      canonical,
     },
   }
 }
