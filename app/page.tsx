@@ -56,12 +56,6 @@ export default function Home() {
             <Link href="/galerie" className="transition hover:text-pink-200">
               Créateurs
             </Link>
-            <Link href="#tarifs" className="transition hover:text-pink-200">
-              Tarifs
-            </Link>
-            <Link href="#apropos" className="transition hover:text-pink-200">
-              À propos
-            </Link>
             <SignedOut>
               <SignInButton mode="modal">
                 <button className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-black transition hover:bg-pink-200">

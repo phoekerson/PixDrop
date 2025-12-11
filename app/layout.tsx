@@ -16,10 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://pixdrop.vercel.app'),
-  title: {
-    default: 'PixDrop - Partage de photos et Galerie en ligne',
-    template: '%s | PixDrop',
-  },
+  title: 'PixDrop - Partage de photos et Galerie en ligne',
   description: 'PixDrop est la meilleure plateforme pour partager vos photos, créer des galeries magnifiques et organiser vos souvenirs. Simple, rapide et élégant.',
   keywords: [
     'partage photos',
@@ -31,8 +28,6 @@ export const metadata: Metadata = {
     'stockage photos',
     'album en ligne',
     'photographie',
-    'nextjs',
-    'react',
     'Lomé Business School'
   ],
   authors: [{ name: 'Caleb Mintoumba', url: 'https://pixdrop.vercel.app' }],
@@ -50,7 +45,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'PixDrop - Partage de photos et Galerie en ligne',
     description: 'Partagez vos photos avec description, catégories et types. Créez votre galerie en quelques minutes.',
-    creator: '@calebmintoumba', // Assuming this handle, can be updated if needed
+    creator: '@calebmintoumba', 
   },
   robots: {
     index: true,
@@ -72,7 +67,6 @@ export default function RootLayout({
 }>) {
   const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
   
-  // Si la clé n'est pas définie, afficher un avertissement mais permettre le build
   if (!publishableKey) {
     console.warn('NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is not set. Clerk authentication will not work.')
   }
